@@ -40,6 +40,7 @@
 
     ];
 
+    // $voteHotel = '';
     // $withParking = 'si';
 
     
@@ -69,12 +70,12 @@
                         <div>
                             <label for="withParking">With Parking</label>
                         </div>
-                        <input type="checkbox" name="withParking" id="withParking" value="true">
+                        <input type="checkbox" name="withParking" id="withParking">
                         <div>
                             <label class="mt-3" for="numberVote">Scegli il voto da 1 a 5</label>
                         </div>
                         <div>
-                            <input type="number"  name="numberVote" id="numberVote" min="1" max="5">                         
+                            <input type="number"  name="numberVote" id="numberVote" min="1" max="5" value="<?php echo isset($_GET['min_vote']) ? $_GET['min_vote'] : ''; ?>">                         
                         </div>
                         <div>
                             <button class="my-3" type="submit">
@@ -96,45 +97,33 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <?php  for($i = 0; $i < count($hotels); $i++) { 
-                                    $withHotelParking = $hotels[$i]['parking'];
-                                    $withThreeOrMoreVote = $hotels[$i]['vote'];
-                                    $withParking = isset($_GET['withParking']);
-                                    $voteHotel = $_GET['numberVote'];
+                        <?php  
+                        $numberVote = isset($_GET['numberVote']) ? (int)$_GET['numberVote'] : null;
+                        $withParking = isset($_GET['withParking']);
+                        foreach ($hotels as $ind => $hotel) {
+                         
+                            
+                            $withThreeOrMoreVote = is_null($numberVote) || $hotel['vote'] >= $numberVote;
+                            $withHotelParking = !$withParking || $hotel['parking'];
 
-                                    if ($withParking == true || $voteHotel >= 3 ) {
-                                        if($withHotelParking == true) {
-                                           
-                                            ?>
-                        <tr>
-                            <th  scope="row"> <?php  echo ($i + 1); ?> </th>
-                            <td> <?php echo $hotels[$i]['name'] ?> </td>
-                            <td> <?php echo $hotels[$i]['description'] ?> </td>
-                            <td> <?php echo $hotels[$i]['parking'] ?> </td>
-                            <td> <?php echo $hotels[$i]['vote'] ?> </td>
-                            <td> <?php echo $hotels[$i]['distance_to_center'] ?> </td>
-                        </tr>
-                        <?php
-                                  
-                            }
-                        }
-                        else {
+                            if ($withHotelParking && $withThreeOrMoreVote ) {
+                                   
+                ?>
+                <tr>
+                    <th  scope="row"> <?php  echo ($ind + 1); ?> </th>
+                    <td> <?php echo $hotel['name'] ?> </td>
+                    <td> <?php echo $hotel['description'] ?> </td>
+                    <td> <?php echo $hotel['parking'] ? 'si': 'no' ?> </td>
+                    <td> <?php echo $hotel['vote'] ?> </td>
+                    <td> <?php echo $hotel['distance_to_center'] ?> </td>
+                </tr>
+                <?php
+                    }
+
+                };
                         ?>
                         
-                        <tr>
-                            <th  scope="row"> <?php echo ($i + 1 )?> </th>
-                            <td> <?php echo $hotels[$i]['name'] ?> </td>
-                            <td> <?php echo $hotels[$i]['description'] ?> </td>
-                            <td> <?php echo $hotels[$i]['parking'] ?> </td>
-                            <td> <?php echo $hotels[$i]['vote'] ?> </td>
-                            <td> <?php echo $hotels[$i]['distance_to_center'] ?> </td>
-                        </tr> 
-                        <?php   
-                        }
                         
-
-                        };
-                        ?>
                     </tbody>
                 </table>
 
